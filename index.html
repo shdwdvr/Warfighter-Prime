@@ -1,0 +1,2378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warfighter Prime v1.7</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1c1410;
+            --bg-card: #2a2118;
+            --text-primary: #e8dcc8;
+            --text-secondary: #b8a890;
+            --accent-primary: #8b7355;
+            --accent-hover: #a68968;
+            --border: #3d2f20;
+            --success: #6b8e23;
+            --warning: #d97706;
+            --danger: #b91c1c;
+            
+            --cmd-bg-primary: #faf8f3;
+            --cmd-bg-secondary: #f0ebe0;
+            --cmd-bg-card: #e8e0d0;
+            --cmd-text-primary: #1a1410;
+            --cmd-text-secondary: #4a3f30;
+            --cmd-accent-primary: #c9a961;
+            --cmd-accent-hover: #d4af37;
+            --cmd-border: #d4c5a8;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body.command-mode {
+            --bg-primary: var(--cmd-bg-primary);
+            --bg-secondary: var(--cmd-bg-secondary);
+            --bg-card: var(--cmd-bg-card);
+            --text-primary: var(--cmd-text-primary);
+            --text-secondary: var(--cmd-text-secondary);
+            --accent-primary: var(--cmd-accent-primary);
+            --accent-hover: var(--cmd-accent-hover);
+            --border: var(--cmd-border);
+        }
+
+        .brand-text {
+            font-style: italic;
+        }
+
+        /* Login Screen */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1614 0%, #0f0d0b 100%);
+            padding: 20px;
+            position: relative;
+        }
+
+        .warning-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #7f1d1d;
+            color: #fef2f2;
+            padding: 10px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            animation: pulse 1.5s ease-in-out infinite;
+            z-index: 1000;
+            border: 2px solid #ffffff;
+            border-left: none;
+            border-right: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .login-box {
+            background: rgba(26, 22, 16, 0.95);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #3d2f20;
+            margin-top: 60px;
+        }
+
+        .login-header h1 {
+            color: #a68968;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .login-header p {
+            color: #8b7355;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .biometric-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(139, 115, 85, 0.1);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .fingerprint-placeholder {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            border: 3px solid var(--accent-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(139, 115, 85, 0.05);
+        }
+
+        .fingerprint-placeholder:hover {
+            border-color: var(--accent-hover);
+            transform: scale(1.05);
+            background: rgba(139, 115, 85, 0.15);
+        }
+
+        .fingerprint-placeholder::before {
+            content: "SCAN";
+            color: var(--accent-primary);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .pin-input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(42, 33, 24, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 20px 0;
+        }
+
+        .pin-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-hover) 100%);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .login-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 115, 85, 0.4);
+        }
+
+        .login-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .login-footer {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+            color: #6b5d4f;
+            font-size: 11px;
+        }
+
+        .login-footer .brand {
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 5px;
+        }
+
+        /* Main App */
+        .app-container {
+            display: none;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .app-container.active {
+            display: block;
+        }
+
+        .top-bar {
+            background: var(--bg-secondary);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .apex-sentinel-bar {
+            background: var(--bg-secondary);
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 50px;
+            z-index: 99;
+            font-size: 11px;
+        }
+
+        .apex-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .apex-status {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .network-pulse-container {
+            flex: 1;
+            max-width: 200px;
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .network-pulse {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, transparent, #6b8e23, transparent);
+            animation: networkPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes networkPulse {
+            0% {
+                left: -40%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        .link-status {
+            color: #6b8e23;
+            font-weight: 700;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-hover);
+            letter-spacing: 2px;
+            font-style: italic;
+        }
+
+        .logout-btn {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 3px 4px;
+            border-radius: 4px;
+            font-size: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: -0.8px;
+            width: fit-content;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+
+        .main-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .ai-search-section {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .ai-search-section h2 {
+            color: var(--accent-hover);
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .analyze-btn, .add-to-cart-btn {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .analyze-btn:hover, .add-to-cart-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .categories-section {
+            margin-bottom: 30px;
+        }
+
+        .categories-section h2 {
+            color: var(--accent-hover);
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .category-search-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-top: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+
+        .search-suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .suggestion-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .suggestion-category {
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .category-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 100%);
+            z-index: 0;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-hover);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-card .category-name {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 10px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+            color: #e0f2f7;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--accent-hover);
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+
+        .products-section {
+            margin-bottom: 30px;
+        }
+
+        .products-section h2 {
+            color: var(--accent-hover);
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+            display: flex;
+            height: 120px;
+        }
+
+        .product-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            border-color: var(--accent-primary);
+        }
+
+        .product-image {
+            width: 120px;
+            min-width: 120px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            border-right: 1px solid var(--border);
+            position: relative;
+        }
+
+        .product-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(139, 115, 85, 0.2) 0%, transparent 70%);
+        }
+
+        .product-info {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .product-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .product-price {
+            color: var(--accent-hover);
+            font-size: 16px;
+            font-weight: 700;
+            margin-left: 15px;
+        }
+
+        .product-description {
+            color: var(--text-secondary);
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        /* Product Detail View */
+        .product-detail-view {
+            display: none;
+        }
+
+        .product-detail-view.active {
+            display: block;
+        }
+
+        .product-detail-hero {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .product-detail-image-large {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .product-detail-image-large::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(139, 115, 85, 0.3) 0%, transparent 70%);
+            border-radius: 8px;
+        }
+
+        .product-detail-title {
+            color: var(--accent-hover);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .product-detail-price {
+            color: var(--text-primary);
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .product-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .meta-card {
+            background: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .meta-label {
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-value {
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .meta-value.in-stock {
+            color: var(--success);
+        }
+
+        .product-description-full {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .product-description-full h3 {
+            color: var(--accent-hover);
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .product-description-full p {
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .similar-items {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .similar-items h3 {
+            color: var(--accent-hover);
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .similar-items-scroll {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+        }
+
+        .similar-item {
+            min-width: 220px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .similar-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .similar-item-icon {
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .similar-item-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .similar-item-price {
+            color: var(--accent-hover);
+            font-weight: 700;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* Budget, Cart, Account - keeping existing styles */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Keeping existing cart, account, menu styles from previous version */
+        .cart-view, .account-view, .menu-view {
+            display: none;
+        }
+
+        .cart-view.active, .account-view.active, .menu-view.active {
+            display: block;
+        }
+
+        .account-section {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .account-section h3 {
+            color: var(--accent-hover);
+            margin-bottom: 15px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .budget-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .budget-chart-container h4 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .budget-chart {
+            width: 100%;
+            height: 150px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .toggle-id-btn {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .display-mode-toggle {
+            background: var(--bg-secondary);
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .display-mode-toggle:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .toggle-label {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 26px;
+            background: var(--bg-primary);
+            border-radius: 13px;
+            position: relative;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-primary);
+        }
+
+        .toggle-slider {
+            width: 22px;
+            height: 22px;
+            background: var(--text-primary);
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            left: 26px;
+        }
+
+        .menu-item {
+            background: var(--bg-card);
+            padding: 18px 20px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-item:hover {
+            border-color: var(--accent-primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item-text {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .order-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-number {
+            color: var(--accent-hover);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .order-date {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .order-item {
+            padding: 8px 0;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .order-again-btn, .view-details-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .order-again-btn {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+
+        .view-details-btn {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .requisition-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .requisition-card:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .req-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .req-status.pending {
+            background: var(--warning);
+            color: var(--bg-primary);
+        }
+
+        .req-status.approved {
+            background: var(--success);
+            color: white;
+        }
+
+        .tracking-timeline {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 3px solid var(--border);
+            margin-right: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-dot.completed {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 20px;
+            width: 2px;
+            height: calc(100% + 10px);
+            background: var(--border);
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-item.completed::after {
+            background: var(--success);
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-location {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .timeline-date {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="warning-banner">
+            ⚠ WARNING: U.S. GOVERNMENT SYSTEM - AUTHORIZED USE ONLY - UNAUTHORIZED ACCESS WILL BE PROSECUTED
+        </div>
+        
+        <div class="login-box">
+            <div class="login-header">
+                <h1 class="brand-text">WARFIGHTER PRIME</h1>
+                <p>Secure Equipment Procurement System</p>
+            </div>
+
+            <div class="biometric-section">
+                <div class="fingerprint-placeholder" id="fingerprintBtn"></div>
+                <p style="color: #8b7355; font-size: 13px;">Touch to authenticate</p>
+            </div>
+
+            <input 
+                type="password" 
+                id="pinInput" 
+                class="pin-input" 
+                placeholder="• • • • • •"
+                maxlength="6"
+                disabled
+            >
+
+            <button class="login-button" id="loginBtn" disabled>
+                AUTHENTICATE
+            </button>
+        </div>
+
+        <div class="login-footer">
+            <div class="brand"><span class="brand-text">Warfighter Prime</span> by Anthem Federal</div>
+            <div>© 2025 Anthem Federal. All rights reserved.</div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="app-container">
+        <div class="top-bar">
+            <div class="logo brand-text">WARFIGHTER PRIME</div>
+            <button class="logout-btn" id="logoutBtn">LOGOUT</button>
+        </div>
+
+        <div class="apex-sentinel-bar">
+            <div class="apex-label">APEX SENTINEL</div>
+            <div class="apex-status">
+                <div class="network-pulse-container">
+                    <div class="network-pulse"></div>
+                </div>
+                <div class="link-status">LINK SECURE</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Home View -->
+            <div id="homeView">
+                <div class="ai-search-section">
+                    <h2>AI Mission Planning</h2>
+                    <div class="search-input-group">
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            id="aiInput"
+                            placeholder="Describe your mission requirements..."
+                        >
+                        <button class="analyze-btn" id="analyzeBtn">ANALYZE</button>
+                    </div>
+                </div>
+
+                <div class="categories-section">
+                    <h2>Equipment Categories</h2>
+                    <div class="category-search-wrapper">
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            id="categorySearchInput"
+                            placeholder="Search equipment by name or category..."
+                            style="width: 100%;"
+                        >
+                        <div id="searchSuggestions" class="search-suggestions"></div>
+                    </div>
+                    <div class="category-grid" id="categoriesGrid"></div>
+                </div>
+
+                <div class="products-section">
+                    <h2>Featured Equipment</h2>
+                    <div class="product-grid" id="productsGrid"></div>
+                </div>
+            </div>
+
+            <!-- Product Detail View -->
+            <div id="productDetailView" class="product-detail-view">
+                <button class="back-btn" id="productBackBtn">← Back</button>
+                <div id="productDetailContent"></div>
+            </div>
+
+            <!-- AI Recommendations View -->
+            <div id="aiRecommendationsView" class="product-detail-view">
+                <button class="back-btn" id="aiRecommendationsBackBtn">← Back</button>
+                <div id="aiRecommendationsContent"></div>
+            </div>
+
+            <!-- Cart, Account, Menu views placeholder -->
+            <div id="cartView" class="cart-view">
+                <button class="back-btn" id="cartBackBtn">← Back</button>
+                <h2 style="color: var(--accent-hover); margin-bottom: 20px;">Shopping Cart</h2>
+                <div id="cartItems"></div>
+            </div>
+
+            <div id="accountView" class="account-view">
+                <button class="back-btn" id="accountBackBtn">← Back</button>
+                <h2 style="color: var(--accent-hover); margin-bottom: 20px;">Account Dashboard</h2>
+                
+                <div class="account-section">
+                    <h3>Operator Information</h3>
+                    <div class="info-row">
+                        <span class="info-label">Operator ID</span>
+                        <span class="info-value" id="operatorIdValue">
+                            WF-2024-7891
+                            <button class="toggle-id-btn" id="toggleIdBtn">Show</button>
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Clearance Level</span>
+                        <span class="info-value">SECRET</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Unit</span>
+                        <span class="info-value">75th Ranger Regiment</span>
+                    </div>
+                </div>
+
+                <div class="account-section">
+                    <h3>Budget Analysis</h3>
+                    <div class="budget-charts">
+                        <div class="budget-chart-container">
+                            <h4>Current Budget - FY 2025</h4>
+                            <canvas id="currentBudgetChart" class="budget-chart"></canvas>
+                            <div style="margin-top: 15px;">
+                                <div style="color: var(--text-primary); font-size: 13px; font-weight: 600; margin-bottom: 8px;" id="currentBudgetText">
+                                    $0 / $18,500,000
+                                </div>
+                                <div style="color: var(--text-secondary); font-size: 11px;">
+                                    <strong>Remaining:</strong> <span id="currentRemaining">$18,500,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="budget-chart-container">
+                            <h4>Projected Budget - FY 2026 Q2</h4>
+                            <canvas id="projectedBudgetChart" class="budget-chart"></canvas>
+                            <div style="margin-top: 15px;">
+                                <div style="color: var(--text-primary); font-size: 13px; font-weight: 600; margin-bottom: 8px;" id="projectedBudgetText">
+                                    $0 / $21,275,000
+                                </div>
+                                <div style="color: var(--text-secondary); font-size: 11px;">
+                                    <strong>vs FY 2025:</strong> <span style="color: var(--success);">+15%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="account-section">
+                    <h3>Settings</h3>
+                    <div class="display-mode-toggle" id="displayModeToggle">
+                        <span class="toggle-label">Display Mode</span>
+                        <div class="toggle-switch" id="toggleSwitch">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="menuView" class="menu-view">
+                <button class="back-btn" id="menuBackBtn">← Back</button>
+                <h2 style="color: var(--accent-hover); margin-bottom: 20px;">Menu</h2>
+                
+                <div class="menu-item" data-action="orders">
+                    <span class="menu-item-text">Order History</span>
+                    <span>→</span>
+                </div>
+                <div class="menu-item" data-action="requisitions">
+                    <span class="menu-item-text">Requisition Forms</span>
+                    <span>→</span>
+                </div>
+                <div class="menu-item" data-action="tracking">
+                    <span class="menu-item-text">Shipment Tracking</span>
+                    <span>→</span>
+                </div>
+                <div class="menu-item" data-action="support">
+                    <span class="menu-item-text">Technical Support</span>
+                    <span>→</span>
+                </div>
+                <div class="menu-item" data-action="settings">
+                    <span class="menu-item-text">Settings</span>
+                    <span>→</span>
+                </div>
+            </div>
+
+            <!-- Order History View -->
+            <div id="orderHistoryView" style="display: none;">
+                <button class="back-btn" id="orderHistoryBackBtn">← Back</button>
+                <h2 style="color: var(--accent-hover); margin-bottom: 20px;">Order History</h2>
+                <div id="ordersList"></div>
+            </div>
+
+            <!-- Requisition Forms View -->
+            <div id="requisitionView" style="display: none;">
+                <button class="back-btn" id="requisitionBackBtn">← Back</button>
+                <h2 style="color: var(--accent-hover); margin-bottom: 20px;">Pending Requisitions</h2>
+                <div id="requisitionsList"></div>
+            </div>
+
+            <!-- Shipment Tracking View -->
+            <div id="trackingView" style="display: none;">
+                <button class="back-btn" id="trackingBackBtn">← Back</button>
+                <h2 style="color: var(--accent-hover); margin-bottom: 20px;">Shipment Tracking</h2>
+                <div id="trackingTimeline"></div>
+            </div>
+
+            <!-- Support View -->
+            <div id="supportView" style="display: none;">
+                <button class="back-btn" id="supportBackBtn">← Back</button>
+                <h2 style="color: var(--accent-hover); margin-bottom: 20px;">Technical Support</h2>
+                
+                <div class="account-section">
+                    <h3>Contact Information</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--border);">
+                        <div style="font-size: 24px;">📞</div>
+                        <div>
+                            <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 5px;">Phone Support</div>
+                            <div style="color: var(--text-secondary); font-size: 12px;">1-800-WARFIGHTER (24/7)</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--border);">
+                        <div style="font-size: 24px;">📧</div>
+                        <div>
+                            <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 5px;">Email Support</div>
+                            <div style="color: var(--text-secondary); font-size: 12px;">support@warfighterprime.mil</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px; padding: 15px 0;">
+                        <div style="font-size: 24px;">🌐</div>
+                        <div>
+                            <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 5px;">Web Portal</div>
+                            <div style="color: var(--text-secondary); font-size: 12px;">https://support.warfighterprime.mil</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--border); min-height: 300px; display: flex; flex-direction: column;">
+                    <div style="flex: 1; margin-bottom: 15px; padding: 15px; background: var(--bg-secondary); border-radius: 6px; color: var(--text-secondary); text-align: center; font-size: 13px;">
+                        Live chat support is available 24/7. Start a conversation below.
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" placeholder="Type your message..." disabled style="flex: 1; padding: 10px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 13px;">
+                        <button disabled style="background: var(--accent-primary); color: var(--bg-primary); border: none; padding: 10px 20px; border-radius: 6px; cursor: not-allowed; opacity: 0.5; font-weight: 600; font-size: 13px;">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Modal for Requisitions -->
+            <div id="formModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 200; padding: 20px; overflow-y: auto; align-items: center; justify-content: center;">
+                <div style="background: var(--bg-secondary); padding: 30px; border-radius: 8px; max-width: 600px; width: 100%; border: 1px solid var(--border);">
+                    <h3 style="color: var(--accent-hover); margin-bottom: 20px;" id="formTitle">Requisition Form</h3>
+                    <div id="formFields"></div>
+                    <button class="back-btn" id="closeModalBtn" style="margin-top: 15px;">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" data-view="home">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item" data-view="cart">
+                <div class="nav-icon">
+                    🛒
+                    <span class="cart-badge hidden" id="cartBadge">0</span>
+                </div>
+                <div class="nav-label">Cart</div>
+            </div>
+            <div class="nav-item" data-view="menu">
+                <div class="nav-icon">☰</div>
+                <div class="nav-label">Menu</div>
+            </div>
+            <div class="nav-item" data-view="account">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Account</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class WarfighterPrime {
+            constructor() {
+                this.currentView = 'home';
+                this.cart = [];
+                this.commandMode = false;
+                this.currentBudgetPercentage = 12;
+                this.projectedBudgetPercentage = 0;
+                this.budgetInterval = null;
+                this.operatorIdHidden = true;
+                
+                this.currentFYBudget = 18500000;
+                this.projectedFYBudget = 21275000;
+                
+                this.orders = [
+                    {
+                        id: 'ORD-2024-1547',
+                        date: '2024-10-15',
+                        items: ['Skydio X10D Tactical Drone', 'DroneShield Counter-UAS', 'IFAK Pro Medical Kit'],
+                        total: 60285,
+                        status: 'Delivered'
+                    }
+                ];
+
+                this.requisitions = [
+                    {
+                        id: 'REQ-2024-8821',
+                        item: 'Skydio X10D Tactical Drone',
+                        quantity: 2,
+                        status: 'Pending',
+                        submitted: '2024-11-05'
+                    },
+                    {
+                        id: 'REQ-2024-8822',
+                        item: 'AN/PRC-163 Radio System',
+                        quantity: 5,
+                        status: 'Approved',
+                        submitted: '2024-11-03'
+                    }
+                ];
+                
+                this.categories = [
+                    { id: 1, name: 'UAV Systems', color: '#2d3e50' },
+                    { id: 2, name: 'Communications', color: '#1a4d2e' },
+                    { id: 3, name: 'Weapon Systems', color: '#4a2c2a' },
+                    { id: 4, name: 'Medical Kits', color: '#5c1a1a' },
+                    { id: 5, name: 'Dive Systems', hasImage: true },
+                    { id: 6, name: 'Counter-UAV', color: '#3d2f20' },
+                    { id: 7, name: 'UAS', color: '#2c3e50' },
+                    { id: 8, name: 'Future Soldier', color: '#1e3a5f' },
+                    { id: 9, name: 'Drones', color: '#2a4d69' }
+                ];
+
+                this.products = [
+                    { id: 1, name: 'Skydio X10D Tactical Drone', price: 25000, category: 1, icon: 'drone', desc: 'Advanced autonomous reconnaissance drone with AI-powered navigation', fullDesc: 'The Skydio X10D represents the pinnacle of autonomous drone technology for tactical operations. Featuring advanced AI-driven obstacle avoidance, 360-degree awareness, and encrypted communications. Thermal and night vision capable with 45-minute flight time.', manufacturer: 'Skydio Inc.', shipper: 'Defense Logistics Agency (DLA)', stock: 47, shipDate: '14-21 days' },
+                    { id: 2, name: 'AN/PRC-163 Radio System', price: 8500, category: 2, icon: 'radio', desc: 'Secure tactical communications with encryption', fullDesc: 'Next-generation tactical radio system providing secure, multi-band communications across VHF, UHF, and SATCOM frequencies. Features AES-256 encryption, automatic frequency hopping, and integration with existing SINCGARS infrastructure.', manufacturer: 'Harris Corporation', shipper: 'Defense Logistics Agency (DLA)', stock: 156, shipDate: '7-10 days' },
+                    { id: 3, name: 'M4A1 Carbine System', price: 1200, category: 3, icon: 'weapon', desc: 'Standard issue carbine with rail system', fullDesc: 'The M4A1 Carbine is a fully automatic variant of the M4 carbine. Features a 14.5-inch barrel, Picatinny rail system for accessories, collapsible stock, and ambidextrous controls. Chambered in 5.56×45mm NATO with select-fire capability.', manufacturer: 'Colt Defense / FN America', shipper: 'Defense Distribution Depot', stock: 324, shipDate: '21-30 days' },
+                    { id: 4, name: 'IFAK Pro Medical Kit', price: 285, category: 4, icon: 'medical', desc: 'Individual First Aid Kit with combat gauze', fullDesc: 'Comprehensive Individual First Aid Kit designed for combat medics and operators. Contains QuikClot combat gauze, chest seals, tourniquets, pressure dressings, airway management tools, and trauma shears.', manufacturer: 'North American Rescue', shipper: 'Medical Logistics Company', stock: 892, shipDate: '3-5 days' },
+                    { id: 5, name: 'DroneShield Counter-UAS', price: 35000, category: 6, icon: 'counter-drone', desc: 'Portable drone detection and countermeasure system', fullDesc: 'Integrated counter-drone solution providing detection, tracking, and defeat capabilities. RF detection range of 2km, directional jamming, and optical identification. Portable configuration with 4-hour battery life.', manufacturer: 'DroneShield Ltd.', shipper: 'Defense Logistics Agency (DLA)', stock: 23, shipDate: '30-45 days' },
+                    { id: 6, name: 'Peltor ComTac VI Headset', price: 1100, category: 2, icon: 'headset', desc: 'Advanced tactical communication headset', fullDesc: 'Premium tactical hearing protection and communication headset. Features omnidirectional microphones, active noise cancellation, and ambient sound amplification. NATO wired and Bluetooth connectivity. Waterproof (IP67) with 100-hour battery life.', manufacturer: '3M/Peltor', shipper: 'Defense Logistics Agency (DLA)', stock: 267, shipDate: '10-14 days' },
+                    { id: 7, name: 'Dräger LAR V Rebreather', price: 12500, category: 5, icon: 'dive', desc: 'Closed-circuit diving rebreather for covert operations', fullDesc: 'Military-grade closed-circuit rebreather for extended underwater operations up to 70 meters depth. Pure oxygen system with 4-hour duration, electronic monitoring, and fully mechanical backup. Nearly bubble-free for covert infiltration missions.', manufacturer: 'Drägerwerk AG', shipper: 'Naval Supply Systems Command', stock: 34, shipDate: '45-60 days' },
+                    { id: 8, name: 'RQ-20 Puma UAS', price: 250000, category: 7, icon: 'uav', desc: 'Small unmanned aircraft system for surveillance', fullDesc: 'Hand-launched reconnaissance UAS with 2.5-hour flight endurance. Equipped with stabilized EO/IR gimbaled sensor payload. Operates in land or maritime environments with waterproof recovery capability. Real-time video transmission up to 20km range.', manufacturer: 'AeroVironment Inc.', shipper: 'Defense Logistics Agency (DLA)', stock: 12, shipDate: '60-90 days' },
+                    { id: 9, name: 'TALOS Exoskeleton System', price: 180000, category: 8, icon: 'exo', desc: 'Tactical Assault Light Operator Suit', fullDesc: 'Revolutionary exoskeleton system integrating powered armor, health monitoring, and enhanced strength capabilities. Liquid armor protection, integrated HUD, climate control, and load-bearing exoskeleton reducing operator fatigue by 60%.', manufacturer: 'SOCOM / Multiple Contractors', shipper: 'Special Operations Forces Support Activity', stock: 3, shipDate: '90-120 days' },
+                    { id: 10, name: 'Black Hornet 3 Nano Drone', price: 19500, category: 9, icon: 'nano-drone', desc: 'Pocket-sized reconnaissance drone system', fullDesc: 'Ultra-lightweight personal reconnaissance system weighing just 32 grams. Operates in GPS-denied environments with 25-minute flight time. Thermal and low-light imaging capability. Silent operation for covert surveillance.', manufacturer: 'FLIR/Teledyne', shipper: 'Defense Logistics Agency (DLA)', stock: 67, shipDate: '30-45 days' },
+                    { id: 11, name: 'Shield AI V-BAT UAS', price: 175000, category: 7, icon: 'vbat', desc: 'Vertical takeoff tactical drone with 8+ hour endurance', fullDesc: 'Revolutionary VTOL unmanned aircraft system with 8+ hour flight time and 55+ knot cruise speed. AI-powered autonomous operation in GPS-denied environments. Multi-mission capable with modular payload bay. Fully autonomous group coordination for swarm operations.', manufacturer: 'Shield AI', shipper: 'Defense Logistics Agency (DLA)', stock: 18, shipDate: '45-60 days' },
+                    { id: 12, name: 'Mesh Network Communications System', price: 42000, category: 2, icon: 'mesh', desc: 'Self-healing tactical mesh network for secure comms', fullDesc: 'Advanced mesh network system providing resilient communications across distributed teams. Self-healing topology with automatic routing. Encrypted data transmission with 256-bit AES. Range up to 10km between nodes. Integrates with existing tactical radios.', manufacturer: 'Persistent Systems LLC', shipper: 'Defense Logistics Agency (DLA)', stock: 34, shipDate: '30-45 days' },
+                    { id: 13, name: 'Anduril Fury Drone', price: 95000, category: 9, icon: 'fury', desc: 'High-performance autonomous combat drone', fullDesc: 'Next-generation autonomous combat drone powered by Anduril Lattice AI. Capable of autonomous target identification and engagement. Modular payload system supporting ISR and strike configurations. Advanced counter-drone capabilities with 60+ minute flight time.', manufacturer: 'Anduril Industries', shipper: 'Defense Logistics Agency (DLA)', stock: 29, shipDate: '60-75 days' },
+                    { id: 14, name: 'NAD Precision Drone Launcher', price: 8500, category: 9, icon: 'launcher', desc: 'Tactical 40mm drone deployment system', fullDesc: 'Innovative 40mm grenade launcher-compatible drone deployment system. Launches small reconnaissance drones up to 200 meters. Battery-powered with instant deployment. Includes 6 deployable drones per magazine. Compatible with standard M203/M320 mounting systems.', manufacturer: 'NAD Defense', shipper: 'Defense Logistics Agency (DLA)', stock: 78, shipDate: '20-30 days' },
+                    { id: 15, name: 'Q-UGV Tactical Ground Robot', price: 125000, category: 8, icon: 'ugv', desc: 'All-terrain quadruped unmanned ground vehicle', fullDesc: 'Advanced four-legged robotic platform for reconnaissance, EOD, and logistics support. Traverses complex terrain including stairs, rubble, and water obstacles. Modular payload system supports cameras, sensors, manipulator arms, and weapon mounts. 4-hour runtime with hot-swappable batteries.', manufacturer: 'Ghost Robotics', shipper: 'Defense Logistics Agency (DLA)', stock: 15, shipDate: '75-90 days' },
+                    { id: 16, name: 'SWAARM Micro-UGV Platform', price: 45000, category: 8, icon: 'micro-ugv', desc: 'Portable reconnaissance ground robot system', fullDesc: 'Lightweight tactical ground robot designed for urban and confined space operations. Features manipulator arm, HD camera suite, and silent electric drive. Climbs stairs, operates in complete darkness with IR illumination. Fits in standard backpack for rapid deployment.', manufacturer: 'Endeavor Robotics', shipper: 'Defense Logistics Agency (DLA)', stock: 42, shipDate: '40-50 days' },
+                    { id: 17, name: 'Greyshark AUV Maritime Drone', price: 285000, category: 5, icon: 'auv', desc: 'Autonomous underwater vehicle for covert ops', fullDesc: 'Advanced autonomous underwater vehicle for intelligence gathering and maritime surveillance. Features synthetic aperture sonar, side-scan imaging, and acoustic antennas. 8+ hour endurance at cruising speed. Fully autonomous navigation with obstacle avoidance. Deployable from submarines or surface vessels.', manufacturer: 'Greyshark Systems', shipper: 'Naval Supply Systems Command', stock: 8, shipDate: '90-120 days' },
+                    { id: 18, name: 'SeaWasp ROV System', price: 95000, category: 5, icon: 'rov', desc: 'Remotely operated underwater vehicle', fullDesc: 'Professional-grade ROV for inspection, reconnaissance, and light manipulation tasks. Operates to 300m depth. HD camera with 180-degree tilt, sonar imaging, and manipulator arm. Tethered control with 500m cable. Portable launch and recovery system included.', manufacturer: 'VideoRay', shipper: 'Naval Supply Systems Command', stock: 28, shipDate: '50-65 days' },
+                    { id: 19, name: 'RECON Tactical Harness System', price: 2400, category: 8, icon: 'harness', desc: 'Modular load-bearing equipment platform', fullDesc: 'Advanced tactical harness system with integrated battery pack, communications hub, and modular attachment points. Distributes equipment weight across shoulders and hips. Quick-release system for emergency egress. Compatible with body armor and plate carriers. Powers tactical devices for 12+ hours.', manufacturer: 'Crye Precision', shipper: 'Defense Logistics Agency (DLA)', stock: 186, shipDate: '15-25 days' },
+                    { id: 20, name: 'Bluefin ROV Delivery Vehicle', price: 175000, category: 5, icon: 'sdv', desc: 'Diver propulsion and equipment delivery system', fullDesc: 'Compact submersible delivery vehicle for SEAL team insertion and logistics. Carries 2 divers plus 400kg of equipment. Silent electric propulsion with 4-hour endurance. Navigation suite with GPS, INS, and depth sounder. Collapsible for transport in rigid inflatable boats.', manufacturer: 'Bluefin Robotics', shipper: 'Naval Special Warfare Command', stock: 12, shipDate: '80-100 days' }
+                ];
+
+                this.aiRecommendedPackage = [
+                    { productId: 1, quantity: 4 },  // Skydio X10D
+                    { productId: 5, quantity: 2 },  // DroneShield Counter-UAS
+                    { productId: 11, quantity: 1 }, // Shield AI V-BAT
+                    { productId: 12, quantity: 1 }, // Mesh Network
+                    { productId: 13, quantity: 2 }, // Anduril Fury
+                    { productId: 4, quantity: 6 },  // IFAK Pro Medical Kit (additional)
+                    { productId: 6, quantity: 8 }   // Peltor ComTac VI Headset (additional)
+                ];
+
+                this.init();
+            }
+
+            init() {
+                this.setupLoginHandlers();
+                this.renderCategories();
+                this.renderProducts();
+                this.setupNavigationHandlers();
+                this.setupSearchHandlers();
+                this.setupMenuHandlers();
+                this.loadCart();
+                this.updateCartBadge();
+            }
+
+            getIconSVG(iconType) {
+                const svgs = {
+                    'drone': '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 30l-10 5v10l10-5v20l-15 8v5l15-8 15 8v-5l-15-8V40l10 5V35l-10-5z"/><circle cx="30" cy="45" r="5"/><circle cx="70" cy="45" r="5"/><circle cx="30" cy="65" r="5"/><circle cx="70" cy="65" r="5"/></svg>',
+                    'radio': '<svg viewBox="0 0 100 100" fill="currentColor"><rect x="25" y="30" width="50" height="40" rx="3"/><circle cx="40" cy="45" r="3"/><circle cx="60" cy="45" r="3"/><rect x="32" y="55" width="36" height="8" rx="2"/><path d="M35 25h30M35 22h30M35 19h30" stroke="currentColor" stroke-width="2"/></svg>',
+                    'weapon': '<svg viewBox="0 0 100 100" fill="currentColor"><rect x="20" y="45" width="60" height="10" rx="2"/><rect x="70" y="40" width="8" height="20" rx="1"/><rect x="25" y="42" width="8" height="16" rx="1"/><path d="M30 50h35M32 48h30M32 52h30"/><circle cx="23" cy="50" r="4"/></svg>',
+                    'medical': '<svg viewBox="0 0 100 100" fill="currentColor"><rect x="30" y="30" width="40" height="40" rx="4"/><rect x="45" y="38" width="10" height="24" fill="#fff"/><rect x="38" y="45" width="24" height="10" fill="#fff"/></svg>',
+                    'counter-drone': '<svg viewBox="0 0 100 100" fill="currentColor"><circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="50" cy="50" r="15" fill="none" stroke="currentColor" stroke-width="2"/><path d="M35 50h30M50 35v30"/><path d="M40 40l20 20M60 40l-20 20" stroke="currentColor" stroke-width="2"/></svg>',
+                    'headset': '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 25c-15 0-25 10-25 25v10h8v-10c0-10 7-17 17-17s17 7 17 17v10h8v-10c0-15-10-25-25-25z"/><rect x="23" y="55" width="12" height="20" rx="3"/><rect x="65" y="55" width="12" height="20" rx="3"/></svg>',
+                    'dive': '<svg viewBox="0 0 100 100" fill="currentColor"><circle cx="50" cy="35" r="10"/><path d="M50 45v15l-10 15h20l-10-15V45z"/><rect x="35" y="45" width="8" height="25" rx="2" transform="rotate(-15 39 57)"/><rect x="57" y="45" width="8" height="25" rx="2" transform="rotate(15 61 57)"/></svg>',
+                    'uav': '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 35l-25 10v5l25-8 25 8v-5l-25-10z"/><rect x="45" y="45" width="10" height="20" rx="2"/><path d="M30 60h40v5H30z"/></svg>',
+                    'exo': '<svg viewBox="0 0 100 100" fill="currentColor"><rect x="42" y="25" width="16" height="15" rx="3"/><rect x="38" y="40" width="24" height="25" rx="2"/><rect x="35" y="65" width="10" height="20" rx="2"/><rect x="55" y="65" width="10" height="20" rx="2"/><rect x="30" y="45" width="8" height="15" rx="2"/><rect x="62" y="45" width="8" height="15" rx="2"/></svg>',
+                    'nano-drone': '<svg viewBox="0 0 100 100" fill="currentColor"><circle cx="50" cy="50" r="8"/><rect x="45" y="35" width="10" height="10" rx="2"/><rect x="45" y="65" width="10" height="10" rx="2"/><rect x="35" y="45" width="10" height="10" rx="2"/><rect x="65" y="45" width="10" height="10" rx="2"/></svg>',
+                    'vbat': '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 30l-8 35h16l-8-35z"/><path d="M42 65l-15-5v8l15 5 16-5 16 5v-8l-16 5-16-5z"/><circle cx="50" cy="30" r="5"/></svg>',
+                    'mesh': '<svg viewBox="0 0 100 100" fill="currentColor"><circle cx="30" cy="30" r="5"/><circle cx="70" cy="30" r="5"/><circle cx="30" cy="70" r="5"/><circle cx="70" cy="70" r="5"/><circle cx="50" cy="50" r="5"/><line x1="30" y1="30" x2="70" y2="30" stroke="currentColor" stroke-width="2"/><line x1="30" y1="70" x2="70" y2="70" stroke="currentColor" stroke-width="2"/><line x1="30" y1="30" x2="30" y2="70" stroke="currentColor" stroke-width="2"/><line x1="70" y1="30" x2="70" y2="70" stroke="currentColor" stroke-width="2"/><line x1="30" y1="30" x2="50" y2="50" stroke="currentColor" stroke-width="2"/><line x1="70" y1="30" x2="50" y2="50" stroke="currentColor" stroke-width="2"/><line x1="30" y1="70" x2="50" y2="50" stroke="currentColor" stroke-width="2"/><line x1="70" y1="70" x2="50" y2="50" stroke="currentColor" stroke-width="2"/></svg>',
+                    'fury': '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 25l-15 20h10v30h10V45h10l-15-20z"/><path d="M30 70h40v5H30z" fill="currentColor" opacity="0.7"/></svg>',
+                    'launcher': '<svg viewBox="0 0 100 100" fill="currentColor"><rect x="35" y="40" width="30" height="35" rx="2"/><rect x="40" y="35" width="20" height="8" rx="1"/><circle cx="45" cy="50" r="3"/><circle cx="55" cy="50" r="3"/><circle cx="45" cy="60" r="3"/><circle cx="55" cy="60" r="3"/></svg>',
+                    'ugv': '<svg viewBox="0 0 100 100" fill="currentColor"><rect x="35" y="40" width="30" height="15" rx="2"/><rect x="30" y="55" width="10" height="20" rx="2"/><rect x="60" y="55" width="10" height="20" rx="2"/><circle cx="35" cy="75" r="5"/><circle cx="65" cy="75" r="5"/><rect x="42" y="30" width="16" height="12" rx="2"/></svg>',
+                    'micro-ugv': '<svg viewBox="0 0 100 100" fill="currentColor"><rect x="38" y="42" width="24" height="12" rx="2"/><circle cx="35" cy="62" r="6"/><circle cx="65" cy="62" r="6"/><rect x="44" y="35" width="12" height="10" rx="2"/></svg>',
+                    'auv': '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M30 50c0-8 5-15 12-18l16-2 16 2c7 3 12 10 12 18s-5 15-12 18l-16 2-16-2c-7-3-12-10-12-18z"/><circle cx="40" cy="45" r="3"/><path d="M25 50h50" stroke="currentColor" stroke-width="2"/></svg>',
+                    'rov': '<svg viewBox="0 0 100 100" fill="currentColor"><rect x="32" y="42" width="36" height="16" rx="3"/><rect x="28" y="50" width="8" height="4"/><rect x="64" y="50" width="8" height="4"/><circle cx="45" cy="50" r="4"/><path d="M50 35v7M50 58v7" stroke="currentColor" stroke-width="2"/></svg>',
+                    'harness': '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 25v50M35 35l15 5 15-5M35 60l15-5 15 5"/><rect x="32" y="32" width="6" height="36" rx="1"/><rect x="62" y="32" width="6" height="36" rx="1"/></svg>',
+                    'sdv': '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M25 45c0-5 3-8 7-8h36c4 0 7 3 7 8v10c0 5-3 8-7 8H32c-4 0-7-3-7-8v-10z"/><circle cx="35" cy="50" r="4"/><circle cx="50" cy="50" r="4"/><circle cx="65" cy="50" r="4"/></svg>'
+                };
+                return svgs[iconType] || svgs['drone'];
+            }
+
+            setupMenuHandlers() {
+                const menuItems = document.querySelectorAll('.menu-item');
+                menuItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const action = e.currentTarget.dataset.action;
+                        this.handleMenuAction(action);
+                    });
+                });
+
+                document.getElementById('orderHistoryBackBtn').addEventListener('click', () => this.switchView('menu'));
+                document.getElementById('requisitionBackBtn').addEventListener('click', () => this.switchView('menu'));
+                document.getElementById('trackingBackBtn').addEventListener('click', () => this.switchView('menu'));
+                document.getElementById('supportBackBtn').addEventListener('click', () => this.switchView('menu'));
+
+                document.getElementById('closeModalBtn').addEventListener('click', () => {
+                    document.getElementById('formModal').style.display = 'none';
+                });
+            }
+
+            handleMenuAction(action) {
+                document.getElementById('menuView').style.display = 'none';
+                
+                if (action === 'orders') {
+                    this.showOrderHistory();
+                } else if (action === 'requisitions') {
+                    this.showRequisitions();
+                } else if (action === 'tracking') {
+                    this.showTracking();
+                } else if (action === 'support') {
+                    this.showSupport();
+                } else if (action === 'settings') {
+                    this.showToast('Settings feature - Use Display Mode toggle in Account');
+                    this.switchView('menu');
+                }
+            }
+
+            showOrderHistory() {
+                document.getElementById('orderHistoryView').style.display = 'block';
+                const ordersList = document.getElementById('ordersList');
+                
+                ordersList.innerHTML = this.orders.map(order => `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-number">${order.id}</div>
+                                <div class="order-date">${order.date}</div>
+                            </div>
+                            <div style="color: var(--success); font-weight: 600; font-size: 13px;">${order.status}</div>
+                        </div>
+                        <div>
+                            ${order.items.map(item => `<div class="order-item">• ${item}</div>`).join('')}
+                        </div>
+                        <div style="color: var(--accent-hover); font-weight: 700; margin: 15px 0;">
+                            Total: $${order.total.toLocaleString()}
+                        </div>
+                        <div>
+                            <button class="order-again-btn" onclick="app.orderAgain('${order.id}')">Order Again</button>
+                            <button class="view-details-btn">View Details</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            orderAgain(orderId) {
+                this.showToast('Items from order added to cart');
+            }
+
+            showRequisitions() {
+                document.getElementById('requisitionView').style.display = 'block';
+                const reqList = document.getElementById('requisitionsList');
+                
+                reqList.innerHTML = this.requisitions.map(req => `
+                    <div class="requisition-card" onclick="app.showRequisitionForm('${req.id}')">
+                        <span class="req-status ${req.status.toLowerCase()}">${req.status}</span>
+                        <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 8px;">
+                            ${req.id}
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 13px; margin-bottom: 5px;">
+                            Item: ${req.item}
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 12px;">
+                            Quantity: ${req.quantity} | Submitted: ${req.submitted}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            showRequisitionForm(reqId) {
+                const req = this.requisitions.find(r => r.id === reqId);
+                document.getElementById('formTitle').textContent = `Requisition Form - ${reqId}`;
+                
+                const fields = `
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; color: var(--text-secondary); font-size: 12px; margin-bottom: 5px; font-weight: 600;">Form Type: DD Form 1149</label>
+                        <input type="text" value="Requisition and Invoice/Shipping Document" readonly style="width: 100%; padding: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 13px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; color: var(--text-secondary); font-size: 12px; margin-bottom: 5px; font-weight: 600;">FAR Reference: FAR 52.213-1</label>
+                        <input type="text" value="Fast Payment Procedure" readonly style="width: 100%; padding: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 13px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; color: var(--text-secondary); font-size: 12px; margin-bottom: 5px; font-weight: 600;">DFARS Clause: DFARS 252.232-7003</label>
+                        <input type="text" value="Electronic Submission of Payment Requests" readonly style="width: 100%; padding: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 13px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; color: var(--text-secondary); font-size: 12px; margin-bottom: 5px; font-weight: 600;">Requisition Number</label>
+                        <input type="text" value="${req.id}" readonly style="width: 100%; padding: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 13px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; color: var(--text-secondary); font-size: 12px; margin-bottom: 5px; font-weight: 600;">Item Description</label>
+                        <input type="text" value="${req.item}" readonly style="width: 100%; padding: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 13px;">
+                    </div>
+                `;
+                
+                document.getElementById('formFields').innerHTML = fields;
+                document.getElementById('formModal').style.display = 'flex';
+            }
+
+            showTracking() {
+                document.getElementById('trackingView').style.display = 'block';
+                const timeline = document.getElementById('trackingTimeline');
+                
+                const trackingData = [
+                    { location: 'Origin: Defense Logistics Agency', date: 'Nov 1, 2024', completed: true },
+                    { location: 'Transit Hub: Fort Bragg', date: 'Nov 3, 2024', completed: true },
+                    { location: 'Regional Distribution: Fort Campbell', date: 'Nov 5, 2024', completed: true },
+                    { location: 'Final Destination: Unit Supply', date: 'Expected: Nov 8, 2024', completed: false }
+                ];
+                
+                timeline.innerHTML = `<div class="tracking-timeline">
+                    ${trackingData.map(item => `
+                        <div class="timeline-item ${item.completed ? 'completed' : ''}">
+                            <div class="timeline-dot ${item.completed ? 'completed' : ''}"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-location">${item.location}</div>
+                                <div class="timeline-date">${item.date}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>`;
+            }
+
+            showSupport() {
+                document.getElementById('supportView').style.display = 'block';
+            }
+
+            setupLoginHandlers() {
+                document.getElementById('fingerprintBtn').addEventListener('click', () => {
+                    document.getElementById('pinInput').disabled = false;
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('pinInput').focus();
+                    this.showToast('Biometric authenticated. Enter PIN.');
+                });
+
+                document.getElementById('loginBtn').addEventListener('click', () => this.login());
+                document.getElementById('pinInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.login();
+                });
+                document.getElementById('logoutBtn').addEventListener('click', () => location.reload());
+            }
+
+            login() {
+                const pin = document.getElementById('pinInput').value;
+                if (pin === '123456') {
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('mainApp').classList.add('active');
+                    this.showToast('Login successful');
+                    this.startBudgetAnimation();
+                } else {
+                    this.showToast('Invalid PIN. Try 123456');
+                }
+            }
+
+            renderCategories() {
+                const grid = document.getElementById('categoriesGrid');
+                grid.innerHTML = this.categories.map(cat => {
+                    let bgStyle = cat.hasImage 
+                        ? `background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAEsAZADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDxeiiivoz5cKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//Z');`
+                        : `background: linear-gradient(135deg, ${cat.color} 0%, rgba(0,0,0,0.8) 100%);`;
+                    
+                    return `
+                        <div class="category-card" data-category="${cat.id}" style="${bgStyle}">
+                            <div class="category-name">${cat.name}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                grid.querySelectorAll('.category-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const categoryId = parseInt(e.currentTarget.dataset.category);
+                        this.filterByCategory(categoryId);
+                    });
+                });
+            }
+
+            filterByCategory(categoryId) {
+                const filtered = this.products.filter(p => p.category === categoryId);
+                this.renderProducts(filtered);
+                const categoryName = this.categories.find(c => c.id === categoryId).name;
+                this.showToast(`Showing ${categoryName}`);
+            }
+
+            renderProducts(productList = this.products) {
+                const grid = document.getElementById('productsGrid');
+                grid.innerHTML = productList.map(product => `
+                    <div class="product-card" data-product-id="${product.id}">
+                        <div class="product-image">
+                            <div style="width: 60px; height: 60px; color: var(--accent-hover);">
+                                ${this.getIconSVG(product.icon)}
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-header">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-price">$${product.price.toLocaleString()}</div>
+                            </div>
+                            <div class="product-description">${product.desc}</div>
+                        </div>
+                    </div>
+                `).join('');
+
+                grid.querySelectorAll('.product-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const productId = parseInt(e.currentTarget.dataset.productId);
+                        this.showProductDetail(productId);
+                    });
+                });
+            }
+
+            showProductDetail(productId) {
+                const product = this.products.find(p => p.id === productId);
+                if (!product) return;
+
+                const similarProducts = this.products
+                    .filter(p => p.category === product.category && p.id !== product.id)
+                    .slice(0, 4);
+
+                const content = `
+                    <div class="product-detail-hero">
+                        <div class="product-detail-image-large">
+                            <div style="width: 120px; height: 120px; color: var(--accent-hover); position: relative; z-index: 1;">
+                                ${this.getIconSVG(product.icon)}
+                            </div>
+                        </div>
+                        <div class="product-detail-title">${product.name}</div>
+                        <div class="product-detail-price">$${product.price.toLocaleString()}</div>
+                        
+                        <div class="product-meta-grid">
+                            <div class="meta-card">
+                                <div class="meta-label">In Stock</div>
+                                <div class="meta-value in-stock">${product.stock} units</div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Ship Date</div>
+                                <div class="meta-value">${product.shipDate}</div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Manufacturer</div>
+                                <div class="meta-value">${product.manufacturer}</div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Shipper</div>
+                                <div class="meta-value">${product.shipper}</div>
+                            </div>
+                        </div>
+                        
+                        <button class="add-to-cart-btn" onclick="app.addToCart(${product.id})" style="width: 100%; padding: 15px; font-size: 16px;">
+                            ADD TO CART
+                        </button>
+                    </div>
+
+                    <div class="product-description-full">
+                        <h3>Description</h3>
+                        <p>${product.fullDesc}</p>
+                    </div>
+
+                    <div class="similar-items">
+                        <h3>Similar Items You May Like</h3>
+                        <div class="similar-items-scroll">
+                            ${similarProducts.map(sim => `
+                                <div class="similar-item" onclick="app.showProductDetail(${sim.id})">
+                                    <div class="similar-item-icon" style="color: var(--accent-hover);">
+                                        ${this.getIconSVG(sim.icon)}
+                                    </div>
+                                    <div class="similar-item-name">${sim.name}</div>
+                                    <div class="similar-item-price">$${sim.price.toLocaleString()}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('productDetailContent').innerHTML = content;
+                document.getElementById('homeView').style.display = 'none';
+                document.getElementById('productDetailView').classList.add('active');
+            }
+
+            addToCart(productId) {
+                const product = this.products.find(p => p.id === productId);
+                this.cart.push(product);
+                this.saveCart();
+                this.updateCartBadge();
+                this.showToast(`${product.name} added to cart`);
+            }
+
+            setupSearchHandlers() {
+                // AI Analyze Button
+                document.getElementById('analyzeBtn').addEventListener('click', () => {
+                    const query = document.getElementById('aiInput').value.trim();
+                    if (query.length > 0) {
+                        this.showAIRecommendations(query);
+                    } else {
+                        this.showToast('Please describe your mission requirements');
+                    }
+                });
+
+                // Category Search
+                const searchInput = document.getElementById('categorySearchInput');
+                const suggestions = document.getElementById('searchSuggestions');
+
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase();
+                    if (query.length < 2) {
+                        suggestions.classList.remove('active');
+                        return;
+                    }
+
+                    const filtered = this.products.filter(p => 
+                        p.name.toLowerCase().includes(query) || 
+                        this.categories.find(c => c.id === p.category)?.name.toLowerCase().includes(query)
+                    );
+
+                    if (filtered.length > 0) {
+                        suggestions.innerHTML = filtered.slice(0, 5).map(product => {
+                            const categoryName = this.categories.find(c => c.id === product.category)?.name;
+                            return `
+                                <div class="suggestion-item" data-product-id="${product.id}">
+                                    <div class="suggestion-name">${product.name}</div>
+                                    <div class="suggestion-category">${categoryName}</div>
+                                </div>
+                            `;
+                        }).join('');
+                        suggestions.classList.add('active');
+
+                        suggestions.querySelectorAll('.suggestion-item').forEach(item => {
+                            item.addEventListener('click', (e) => {
+                                const productId = parseInt(e.currentTarget.dataset.productId);
+                                this.showProductDetail(productId);
+                                searchInput.value = '';
+                                suggestions.classList.remove('active');
+                            });
+                        });
+                    } else {
+                        suggestions.classList.remove('active');
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+                        suggestions.classList.remove('active');
+                    }
+                });
+            }
+
+            showAIRecommendations(query) {
+                const loading = document.createElement('div');
+                loading.className = 'loading';
+                loading.textContent = 'Analyzing mission requirements...';
+                document.querySelector('.ai-search-section').appendChild(loading);
+
+                setTimeout(() => {
+                    loading.remove();
+                    
+                    const recommendedItems = this.aiRecommendedPackage.map(rec => {
+                        const product = this.products.find(p => p.id === rec.productId);
+                        return { ...product, quantity: rec.quantity };
+                    });
+
+                    const totalCost = recommendedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+                    const content = `
+                        <div style="display: grid; grid-template-columns: 1fr 300px; gap: 20px;">
+                            <div>
+                                <div class="product-detail-hero">
+                                    <div class="product-detail-title">AI Recommended Equipment Package</div>
+                                    <div style="color: var(--text-secondary); font-size: 14px; line-height: 1.7; margin-bottom: 25px;">
+                                        <strong>Mission Analysis:</strong> Based on your requirements, this package is suitable for a <strong>20-30 person team</strong> conducting tactical operations with drone support and counter-measures. The system includes:
+                                        <br><br>
+                                        • <strong>Multi-layer surveillance:</strong> Tactical drones for close reconnaissance and long-range ISR<br>
+                                        • <strong>Counter-UAS protection:</strong> Active countermeasures to suppress hostile drone threats<br>
+                                        • <strong>Secure communications:</strong> Self-healing mesh network for resilient team coordination<br>
+                                        • <strong>Autonomous capabilities:</strong> AI-powered systems for complete operational awareness<br>
+                                        • <strong>Medical & Comms Support:</strong> Complete IFAK medical coverage and tactical headsets for team coordination<br>
+                                        <br>
+                                        This is a <strong>complete autonomous suppression package</strong> designed for modern asymmetric warfare scenarios.
+                                    </div>
+
+                                    <div class="product-meta-grid">
+                                        <div class="meta-card">
+                                            <div class="meta-label">Total Package Cost</div>
+                                            <div class="meta-value" style="color: var(--accent-hover); font-size: 20px;">$${totalCost.toLocaleString()}</div>
+                                        </div>
+                                        <div class="meta-card">
+                                            <div class="meta-label">Items in Package</div>
+                                            <div class="meta-value">${recommendedItems.length} Systems</div>
+                                        </div>
+                                        <div class="meta-card">
+                                            <div class="meta-label">Team Size</div>
+                                            <div class="meta-value">20-30 Personnel</div>
+                                        </div>
+                                        <div class="meta-card">
+                                            <div class="meta-label">Deployment Timeline</div>
+                                            <div class="meta-value">60-90 Days</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="product-description-full">
+                                    <h3>Package Contents</h3>
+                                    ${recommendedItems.map(item => `
+                                        <div style="background: var(--bg-secondary); padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="app.showProductDetail(${item.id})">
+                                            <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
+                                                <div style="width: 40px; height: 40px; color: var(--accent-hover);">
+                                                    ${this.getIconSVG(item.icon)}
+                                                </div>
+                                                <div style="flex: 1;">
+                                                    <div style="color: var(--text-primary); font-weight: 600; font-size: 15px; margin-bottom: 5px;">
+                                                        ${item.quantity}x ${item.name}
+                                                    </div>
+                                                    <div style="color: var(--text-secondary); font-size: 12px;">
+                                                        ${item.desc}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="text-align: right;">
+                                                <div style="color: var(--accent-hover); font-weight: 700; font-size: 18px;">
+                                                    $${(item.price * item.quantity).toLocaleString()}
+                                                </div>
+                                                <div style="color: var(--text-secondary); font-size: 11px;">
+                                                    $${item.price.toLocaleString()} each
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+
+                                <button class="add-to-cart-btn" onclick="app.addPackageToCart()" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 20px;">
+                                    ADD ENTIRE PACKAGE TO CART
+                                </button>
+                            </div>
+
+                            <div>
+                                <div style="background: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--border); position: sticky; top: 120px;">
+                                    <h3 style="color: var(--accent-hover); font-size: 16px; margin-bottom: 15px;">Logistics Summary</h3>
+                                    
+                                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+                                        <div style="color: var(--text-secondary); font-size: 12px; font-weight: 600; margin-bottom: 8px;">SHIPPING TIMELINE</div>
+                                        <div style="color: var(--text-primary); font-size: 14px; font-weight: 600; margin-bottom: 5px;">Primary Delivery</div>
+                                        <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 10px;">45-60 days (Shield AI V-BAT)</div>
+                                        <div style="color: var(--text-primary); font-size: 14px; font-weight: 600; margin-bottom: 5px;">Extended Items</div>
+                                        <div style="color: var(--text-secondary); font-size: 12px;">60-90 days (Anduril Fury)</div>
+                                    </div>
+
+                                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+                                        <div style="color: var(--text-secondary); font-size: 12px; font-weight: 600; margin-bottom: 8px;">AVAILABILITY STATUS</div>
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                            <span style="color: var(--text-primary); font-size: 13px;">In Stock</span>
+                                            <span style="color: var(--success); font-weight: 700; font-size: 13px;">✓ 92%</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                            <span style="color: var(--text-primary); font-size: 13px;">Limited</span>
+                                            <span style="color: var(--warning); font-weight: 700; font-size: 13px;">! 8%</span>
+                                        </div>
+                                        <div style="color: var(--text-secondary); font-size: 11px; margin-top: 10px; font-style: italic;">
+                                            All items verified in stock as of today
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+                                        <div style="color: var(--text-secondary); font-size: 12px; font-weight: 600; margin-bottom: 8px;">SHIPPING ORIGIN</div>
+                                        <div style="color: var(--text-primary); font-size: 13px; margin-bottom: 5px;">📍 Defense Logistics Agency</div>
+                                        <div style="color: var(--text-secondary); font-size: 11px; margin-bottom: 10px;">Primary Distribution: Fort Bragg, NC</div>
+                                        <div style="color: var(--text-primary); font-size: 13px; margin-bottom: 5px;">📍 Naval Supply Systems</div>
+                                        <div style="color: var(--text-secondary); font-size: 11px;">Dive Equipment: Naval Base San Diego</div>
+                                    </div>
+
+                                    <div>
+                                        <div style="color: var(--text-secondary); font-size: 12px; font-weight: 600; margin-bottom: 8px;">PRIORITY NOTES</div>
+                                        <div style="background: rgba(107, 142, 35, 0.1); padding: 10px; border-radius: 6px; border: 1px solid rgba(107, 142, 35, 0.3);">
+                                            <div style="color: var(--success); font-size: 11px; line-height: 1.5;">
+                                                ✓ Expedited shipping available<br>
+                                                ✓ Priority allocation approved<br>
+                                                ✓ All items security cleared
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('aiRecommendationsContent').innerHTML = content;
+                    document.getElementById('homeView').style.display = 'none';
+                    document.getElementById('aiRecommendationsView').classList.add('active');
+                }, 1500);
+            }
+
+            addPackageToCart() {
+                this.aiRecommendedPackage.forEach(rec => {
+                    const product = this.products.find(p => p.id === rec.productId);
+                    for (let i = 0; i < rec.quantity; i++) {
+                        this.cart.push(product);
+                    }
+                });
+                this.saveCart();
+                this.updateCartBadge();
+                this.showToast('Complete package added to cart');
+            }
+
+            setupNavigationHandlers() {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const view = e.currentTarget.dataset.view;
+                        this.switchView(view);
+                    });
+                });
+
+                document.getElementById('productBackBtn').addEventListener('click', () => {
+                    document.getElementById('productDetailView').classList.remove('active');
+                    document.getElementById('homeView').style.display = 'block';
+                });
+
+                document.getElementById('aiRecommendationsBackBtn').addEventListener('click', () => {
+                    document.getElementById('aiRecommendationsView').classList.remove('active');
+                    document.getElementById('homeView').style.display = 'block';
+                });
+
+                document.getElementById('cartBackBtn').addEventListener('click', () => this.switchView('home'));
+                document.getElementById('accountBackBtn').addEventListener('click', () => this.switchView('home'));
+                document.getElementById('menuBackBtn').addEventListener('click', () => this.switchView('home'));
+
+                document.getElementById('toggleIdBtn').addEventListener('click', () => this.toggleOperatorId());
+                
+                // Display Mode Toggle
+                document.getElementById('displayModeToggle').addEventListener('click', () => this.toggleDisplayMode());
+            }
+
+            toggleDisplayMode() {
+                this.commandMode = !this.commandMode;
+                const body = document.body;
+                const toggleSwitch = document.getElementById('toggleSwitch');
+                
+                if (this.commandMode) {
+                    body.classList.add('command-mode');
+                    toggleSwitch.classList.add('active');
+                    this.showToast('Command Mode activated');
+                } else {
+                    body.classList.remove('command-mode');
+                    toggleSwitch.classList.remove('active');
+                    this.showToast('Tactical Mode activated');
+                }
+                
+                if (this.currentView === 'account') {
+                    setTimeout(() => this.renderBudgetCharts(), 100);
+                }
+            }
+
+            switchView(view) {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelector(`[data-view="${view}"]`)?.classList.add('active');
+
+                document.getElementById('homeView').style.display = 'none';
+                document.getElementById('productDetailView').classList.remove('active');
+                document.getElementById('aiRecommendationsView').classList.remove('active');
+                document.getElementById('cartView').classList.remove('active');
+                document.getElementById('accountView').classList.remove('active');
+                document.getElementById('menuView').style.display = 'none';
+                document.getElementById('orderHistoryView').style.display = 'none';
+                document.getElementById('requisitionView').style.display = 'none';
+                document.getElementById('trackingView').style.display = 'none';
+                document.getElementById('supportView').style.display = 'none';
+
+                if (view === 'home') {
+                    document.getElementById('homeView').style.display = 'block';
+                } else if (view === 'cart') {
+                    document.getElementById('cartView').classList.add('active');
+                    this.renderCart();
+                } else if (view === 'account') {
+                    document.getElementById('accountView').classList.add('active');
+                    this.renderBudgetCharts();
+                } else if (view === 'menu') {
+                    document.getElementById('menuView').style.display = 'block';
+                }
+
+                this.currentView = view;
+            }
+
+            renderCart() {
+                const cartItems = document.getElementById('cartItems');
+                if (this.cart.length === 0) {
+                    cartItems.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 40px;">Your cart is empty</p>';
+                    return;
+                }
+
+                // Group items by ID and count quantities
+                const groupedItems = {};
+                this.cart.forEach(item => {
+                    if (groupedItems[item.id]) {
+                        groupedItems[item.id].quantity++;
+                    } else {
+                        groupedItems[item.id] = { ...item, quantity: 1 };
+                    }
+                });
+
+                const itemsArray = Object.values(groupedItems);
+                const total = this.cart.reduce((sum, item) => sum + item.price, 0);
+
+                cartItems.innerHTML = itemsArray.map((item, index) => `
+                    <div style="background: var(--bg-card); padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border);">
+                        <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+                            <div style="width: 50px; height: 50px; color: var(--accent-hover);">
+                                ${this.getIconSVG(item.icon)}
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 5px;">${item.name}</div>
+                                <div style="color: var(--text-secondary); font-size: 12px;">${item.desc}</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <button onclick="app.decreaseCartQuantity(${item.id})" style="width: 32px; height: 32px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); cursor: pointer; font-weight: 700; font-size: 16px;">−</button>
+                                <span style="color: var(--text-primary); font-weight: 600; min-width: 30px; text-align: center;">${item.quantity}</span>
+                                <button onclick="app.increaseCartQuantity(${item.id})" style="width: 32px; height: 32px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); cursor: pointer; font-weight: 700; font-size: 16px;">+</button>
+                            </div>
+                            <div style="text-align: right; display: flex; align-items: center; gap: 15px;">
+                                <div style="color: var(--accent-hover); font-size: 18px; font-weight: 700;">$${(item.price * item.quantity).toLocaleString()}</div>
+                                <button onclick="app.removeFromCart(${item.id})" style="background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">REMOVE</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('') + `
+                    <div style="background: var(--bg-card); padding: 20px; border-radius: 8px; margin-top: 20px; text-align: right; border: 1px solid var(--border);">
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Total</h3>
+                        <div style="color: var(--accent-hover); font-size: 28px; font-weight: 700;">$${total.toLocaleString()}</div>
+                        <button style="width: 100%; margin-top: 20px; padding: 15px; background: var(--accent-primary); color: var(--bg-primary); border: none; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer;">CHECKOUT</button>
+                    </div>
+                `;
+            }
+
+            increaseCartQuantity(productId) {
+                const product = this.products.find(p => p.id === productId);
+                this.cart.push(product);
+                this.saveCart();
+                this.updateCartBadge();
+                this.renderCart();
+            }
+
+            decreaseCartQuantity(productId) {
+                const index = this.cart.findIndex(item => item.id === productId);
+                if (index !== -1) {
+                    this.cart.splice(index, 1);
+                    this.saveCart();
+                    this.updateCartBadge();
+                    this.renderCart();
+                }
+            }
+
+            removeFromCart(productId) {
+                this.cart = this.cart.filter(item => item.id !== productId);
+                this.saveCart();
+                this.updateCartBadge();
+                this.renderCart();
+                this.showToast('Item removed from cart');
+            }
+
+            renderBudgetCharts() {
+                this.renderBudgetChart('currentBudgetChart', this.currentBudgetPercentage);
+                this.renderBudgetChart('projectedBudgetChart', this.projectedBudgetPercentage);
+                
+                const currentSpent = Math.round(this.currentFYBudget * (this.currentBudgetPercentage / 100));
+                const projectedSpent = Math.round(this.projectedFYBudget * (this.projectedBudgetPercentage / 100));
+                
+                document.getElementById('currentBudgetText').textContent = 
+                    `$${currentSpent.toLocaleString()} / $${this.currentFYBudget.toLocaleString()}`;
+                document.getElementById('currentRemaining').textContent = 
+                    `$${(this.currentFYBudget - currentSpent).toLocaleString()}`;
+                    
+                document.getElementById('projectedBudgetText').textContent = 
+                    `$${projectedSpent.toLocaleString()} / $${this.projectedFYBudget.toLocaleString()}`;
+            }
+
+            renderBudgetChart(canvasId, percentage) {
+                const canvas = document.getElementById(canvasId);
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = 150;
+
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = 50;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--border');
+                ctx.lineWidth = 12;
+                ctx.stroke();
+
+                const percent = percentage / 100;
+                const endAngle = -Math.PI / 2 + (2 * Math.PI * percent);
+                
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, -Math.PI / 2, endAngle);
+                ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--accent-hover');
+                ctx.lineWidth = 12;
+                ctx.stroke();
+
+                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-primary');
+                ctx.font = 'bold 20px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`${percentage}%`, centerX, centerY);
+            }
+
+            startBudgetAnimation() {
+                if (this.budgetInterval) clearInterval(this.budgetInterval);
+                
+                this.budgetInterval = setInterval(() => {
+                    this.currentBudgetPercentage += 2;
+                    if (this.currentBudgetPercentage > 100) this.currentBudgetPercentage = 12;
+                    
+                    this.projectedBudgetPercentage += 10;
+                    if (this.projectedBudgetPercentage > 100) this.projectedBudgetPercentage = 0;
+                    
+                    if (this.currentView === 'account') {
+                        this.renderBudgetCharts();
+                    }
+                }, 2000);
+            }
+
+            toggleOperatorId() {
+                this.operatorIdHidden = !this.operatorIdHidden;
+                const valueSpan = document.getElementById('operatorIdValue');
+                const text = this.operatorIdHidden ? 'WF-2024-7891' : 'Colonel Holly Jones';
+                const btnText = this.operatorIdHidden ? 'Show' : 'Hide';
+                valueSpan.innerHTML = `${text} <button class="toggle-id-btn" id="toggleIdBtn">${btnText}</button>`;
+                document.getElementById('toggleIdBtn').addEventListener('click', () => this.toggleOperatorId());
+            }
+
+            updateCartBadge() {
+                const badge = document.getElementById('cartBadge');
+                if (this.cart.length > 0) {
+                    badge.textContent = this.cart.length;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+
+            saveCart() {
+                localStorage.setItem('warfighter_cart', JSON.stringify(this.cart));
+            }
+
+            loadCart() {
+                const saved = localStorage.getItem('warfighter_cart');
+                if (saved) this.cart = JSON.parse(saved);
+            }
+
+            showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+        }
+
+        const app = new WarfighterPrime();
+    </script>
+</body>
+</html>
